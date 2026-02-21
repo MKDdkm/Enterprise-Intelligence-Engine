@@ -1,76 +1,3 @@
-
-# import os
-# from dotenv import load_dotenv
-# from cerebras.cloud.sdk import Cerebras
-
-# load_dotenv()
-
-# def create_analysis_agent():
-
-#     # Initialize Cerebras client
-#     client = Cerebras(
-#         api_key=os.getenv("CEREBRAS_API_KEY")
-#     )
-
-#     def analyze_company(domain, services, scraped_data):
-
-#         prompt = f"""
-# You are a senior business intelligence analyst.
-
-# Your task is to deeply analyze the target company and evaluate strategic fit.
-
-# REQUIREMENTS:
-
-# 1. Create a detailed Company Dossier.
-# 2. Identify Industry & Business Model.
-# 3. Extract Core Services & Capabilities.
-# 4. Analyze Strategic Fit with DataVex Services.
-# 5. Provide Research Summary.
-# 6. Include clear reasoning steps (research trace).
-
-# ---
-
-# TARGET COMPANY DOMAIN:
-# {domain}
-
-# ---
-
-# DATA VEX SERVICE CATALOG:
-# {services}
-
-# ---
-
-# SCRAPED WEBSITE DATA (JSON):
-# {scraped_data}
-
-# ---
-
-# Return in structured format with clear headings.
-# """
-
-#         response = client.chat.completions.create(
-#             model="gpt-oss-120b",
-#             messages=[
-#                 {
-#                     "role": "system",
-#                     "content": "You are a strategic business research expert."
-#                 },
-#                 {
-#                     "role": "user",
-#                     "content": prompt
-#                 }
-#             ],
-#             temperature=0.3
-#         )
-
-#         return response.choices[0].message.content
-
-#     return analyze_company
-
-
-
-# agents/analysis_agent.py
-
 import os
 from dotenv import load_dotenv
 from cerebras.cloud.sdk import Cerebras
@@ -86,28 +13,40 @@ def create_analysis_agent():
     def analyze_company(domain, services, scraped_data):
 
         prompt = f"""
-You are a senior business intelligence analyst.
+You are a senior enterprise business intelligence analyst.
 
-Your task is to analyze the TARGET COMPANY using ONLY the scraped website data.
+Your goal is to deeply analyze the TARGET COMPANY as a potential CLIENT for DataVex.
 
-You MUST use the scraped content provided below.
+CRITICAL RULES:
+- Use ONLY the provided scraped website data.
+- Do NOT invent external information.
+- Keep FULL detailed analysis.
+- Do NOT summarize.
+- Return ONLY valid JSON.
+- No extra text outside JSON.
 
-Return ONLY the following sections:
+Scoring Guidelines:
+0–30   = Weak alignment
+31–60  = Moderate alignment
+61–80  = Strong alignment
+81–100 = Excellent strategic fit
 
-1. Company Dossier
-2. Key Business Insights
-3. Industry & Business Model
-4. Service Alignment Analysis with DataVex
-5. Research Journey Trace (step-by-step reasoning)
+Return EXACTLY this JSON structure:
 
-IMPORTANT:
-- Base all conclusions strictly on scraped data.
-- Do not invent external information.
-- Use logical reasoning only from the provided content.
+{{
+  "company_dossier": "Comprehensive structured overview of the company",
+  "key_business_insights": "Deep insights about business model, positioning, strengths, opportunities",
+  "industry_and_business_model": "Industry classification and detailed revenue model analysis",
+  "service_alignment_analysis": "Detailed comparison between company capabilities and DataVex services",
+  "fit_score": 0,
+  "research_journey_trace": "Step-by-step reasoning showing how conclusions were derived from scraped data"
+}}
+
+Be analytical, objective, and evidence-based.
 
 ---
 
-TARGET COMPANY DOMAIN:
+TARGET DOMAIN:
 {domain}
 
 ---
@@ -117,12 +56,8 @@ DATA VEX SERVICE CATALOG:
 
 ---
 
-SCRAPED WEBSITE DATA (JSON):
+SCRAPED WEBSITE DATA:
 {scraped_data}
-
----
-
-Return structured output with clear headings.
 """
 
         response = client.chat.completions.create(
@@ -130,7 +65,7 @@ Return structured output with clear headings.
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a disciplined business intelligence analyst."
+                    "content": "Return only valid JSON. Be detailed and evidence-based."
                 },
                 {
                     "role": "user",
