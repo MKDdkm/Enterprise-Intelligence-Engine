@@ -1,0 +1,23 @@
+{
+  "name": "hershield-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "lint": "node --check src/server.js src/services/pinataService.js src/services/evidenceStore.js",
+    "build": "node -e \"console.log('No backend build step required for this Node service.')\"",
+    "clean:test-data": "node scripts/cleanupEvidenceRecords.js"
+  },
+  "dependencies": {
+    "@vonage/server-sdk": "^3.27.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^9.4.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^8.0.5",
+    "vite_react_shadcn_ts": "file:.."
+  }
+}
